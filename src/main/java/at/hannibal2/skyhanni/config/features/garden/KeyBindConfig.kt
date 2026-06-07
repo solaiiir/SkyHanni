@@ -68,6 +68,11 @@ class KeyBindConfig {
     val presetDefault: Runnable = Runnable(GardenCustomKeybinds::defaultAll)
 
     @Expose
+    @ConfigOption(name = "Toggle attack", desc = "Make attack a toggle keybind when custom keybinds are enabled")
+    @ConfigEditorBoolean
+    val attackToggle: Boolean = false
+
+    @Expose
     @ConfigOption(name = "Attack", desc = "")
     @ConfigEditorKeybind(defaultKey = KeyboardManager.LEFT_MOUSE)
     val attack: Property<Int> = Property.of(KeyboardManager.LEFT_MOUSE)

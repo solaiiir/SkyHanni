@@ -59,7 +59,7 @@ object GardenCustomKeybinds {
     }
 
     @JvmStatic
-    fun isKeyPressed(keyBinding: KeyMapping, cir: CallbackInfoReturnable<Boolean>) {
+    fun isKeyPressed(keyBinding: KeyMapping, isDown: Boolean, cir: CallbackInfoReturnable<Boolean>) {
         if (!updateActiveState()) return
         val override = map[keyBinding] ?: run {
             if (map.containsValue(keyBinding.key.value)) {
@@ -68,7 +68,7 @@ object GardenCustomKeybinds {
             return
         }
         cir.returnValue = if (keyBinding.isToggle() && keyBinding.isRemappedFrom(override)) {
-            keyBinding.consumeToggleClick(override)
+            keyBinding.consumeToggleClick(override, isDown)
         } else {
             override.isKeyClicked()
         }
@@ -133,8 +133,10 @@ object GardenCustomKeybinds {
         }
     }
 
-    private fun KeyMapping.isToggle(): Boolean =
-        this is ToggleKeyMapping && needsToggle.getAsBoolean()
+    private fun KeyMapping.isToggle(): Boolean {
+        if (this.name == "key.attack" && config.attackToggle) return true
+        return this is ToggleKeyMapping && needsToggle.getAsBoolean()
+    }
 
     private fun KeyMapping.isRemappedFrom(override: Int): Boolean =
         key.value != override
@@ -147,11 +149,11 @@ object GardenCustomKeybinds {
         if (pressedToggleKeys[this] == override) return isDown
 
         pressedToggleKeys[this] = override
-        setDown(true)
-        return !isDown
+        setDown(!isDown)
+        return isDown
     }
 
-    private fun KeyMapping.consumeToggleClick(override: Int): Boolean {
+    private fun KeyMapping.consumeToggleClick(override: Int, isDown: Boolean): Boolean {
         if (!override.isKeyHeld()) {
             pressedToggleKeys.remove(this, override)
             return false
@@ -159,7 +161,7 @@ object GardenCustomKeybinds {
         if (pressedToggleKeys[this] == override) return false
 
         pressedToggleKeys[this] = override
-        setDown(true)
+        setDown(!isDown)
         return true
     }
 

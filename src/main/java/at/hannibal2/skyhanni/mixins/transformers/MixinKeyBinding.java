@@ -41,7 +41,7 @@ public class MixinKeyBinding {
     public void noIsPressed(CallbackInfoReturnable<Boolean> cir) {
         @SuppressWarnings("DataFlowIssue")
         KeyMapping keyBinding = (KeyMapping) (Object) this;
-        GardenCustomKeybinds.isKeyPressed(keyBinding, cir);
+        GardenCustomKeybinds.isKeyPressed(keyBinding, this.isDown, cir);
         if (cir.isCancelled()) {
             this.clickCount = 0;
         }
